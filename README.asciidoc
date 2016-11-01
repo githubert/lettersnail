@@ -1,0 +1,469 @@
+= Clockrotz
+Clemens Fries <github-clockrotz@xenoworld.de>
+:source-highlighter: pygments
+:toc: left
+:clockrotz-ini: clockrotz.ini
+:clockrotz-base: clockrotz
+:version: 0.0.1
+
+Clockrotz v{version} — a simple email notification helper.
+
+IMPORTANT: This program is in development and might have some rough edges. The
+documentation on `master` should still accurately reflect the current state of
+the program.
+
+== What is `clockrotz`?
+
+`clockrotz` is a “note to my future self” email notification tool. You write a
+simple text file, with some metadata, and it will, upon invocation, send a
+message when the time has come.
+
+.Example message
+----
+to: me@example.com
+subject: Watch Halley's Comet
+date: 2061-07-28
+
+Greetings!
+
+Go outside at night, if the curfew of the – highly welcomed — alien overlords
+permits, and watch Halley's Comet.
+----
+
+=== Motivation
+
+I needed a fairly simple tool to send some one-off reminders to myself, and
+possibly to others. Plus, I wanted the messages to live in my home directory,
+so I would not forget them if I move to another server. You could realize
+most of this with `atd`, but it is a bit clumsy if want to quickly write a
+message, plus I'd totally forget to copy `/var/spool/at`.
+
+`clockrotz` is not meant to be a daemon. It should be executed regularly by a
+cron job or other method. For the `date` parameter it also supports having a
+specific time, which acts as a “not before” constraint. If you run your cron
+job often enough (for example: every five minutes) the message will, of course,
+be sent very close to the given time.
+
+
+== Quick Start
+
+=== Building
+
+In order to check out and build the project in its own directory in `/tmp`,
+write the following:
+
+[source,shell]
+----
+cd $(mktemp -d)
+export GOPATH=$PWD
+git clone http://github.com/githubert/clockrotz src/github.com/githubert/clockrotz
+cd src/github.com/githubert/clockrotz
+godep get
+go build
+----
+
+=== Running
+
+Create `.config/{clockrotz-ini}`:
+[source,ini]
+----
+[default]
+server = smtp.example.com
+user = me
+password = aengeequ6xeiseoY
+from = me@example.com
+----
+
+Create a new message:
+----
+clockrotz create --to me@example.com
+----
+
+Add a cron job:
+----
+0 6 * * * /path/to/clockrotz run
+----
+
+List messages due in the next days:
+----
+clockrotz next
+----
+
+Run manually:
+----
+clockrotz run
+----
+
+== Quick Start Walkthrough
+
+Create a file `.config/{clockrotz-ini}` and provide a server, credentials and a
+from address:
+
+[source,ini]
+----
+[default]
+server = smtp.example.com
+user = me
+password = aengeequ6xeiseoY
+from = me@example.com
+----
+
+NOTE: `port` defaults to `587`. If it doesn't work, try setting `port` to
+`25`.
+
+Now ready some message to yourself:
+
+----
+clockrotz create --to me@example.com
+----
+
+This will open a new file using the editor set in the `VISUAL` environment
+variable, or if no editor is set, it will default to `vi`.
+
+Fill in `date` in the format `YYYY-mm-dd` (for example `date: 2016-01-01`) and
+add a meaningful `subject`. Add a blank line between the configuration in the
+header and your message's body.
+
+Save and exit the editor. `clockrotz` will ask you what to do. Press `ENTER` to
+save the message to the `{clockrotz-base}/todo` folder.
+
+If you set `date` to today's date you can test if everything works. First check
+if everything is okay by running `clockrotz check`, if it reports no errors,
+you can see with `clockrotz next` if the message is scheduled for being sent
+out in the next seven days.
+
+Finally, if you type `clockrotz run`, it will deliver all messages that were
+due.
+
+As `clockrotz` is not a daemon, you should run it daily by adding it as a cron
+job.
+
+Type `crontab -e` and add a entry to run the command every day at 6 in the
+morning:
+
+----
+0 6 * * * /path/to/clockrotz run
+----
+
+== Folder structure
+
+The default working directory is `clockrotz`, located in the user's home
+directory. There are several folders created beneath it, when the program
+is invoked.
+
+----
+clockrotz/
+  todo/
+  done/
+  errors/
+  drafts/
+----
+
+`todo/` is the message queue. All `.msg` files in that folder are considered
+when running `clockrotz run`.
+
+`done/` contains all messages that were successfully delivered. For every
+message there is also a corresponding `.log` file.
+
+`errors/` contains all messages that could not be delivered. For every message
+there is also a corresponding `.log` file.
+
+`drafts/` contains messages that can be used with `clockrotz create --draft
+FILENAME`. Additionally, messages in this folder will also be checked with
+`clockrotz check`.
+
+== Global Settings File `.config/{clockrotz-ini}`
+
+Global settings can be put into the optional file `.config/{clockrotz-ini}`.
+
+All _global_ settings can also be overridden on the command line.
+
+`.config/{clockrotz-ini}` is a simple ini-style settings file with a `default`
+section, plus optional sections for every command, in order to overrule the
+settings in the `default` section.
+
+.Example file
+[source,ini]
+----
+[default]
+workdir = ~/clockrotz
+server = smtp.example.com
+port = 587
+from = me@example.com
+
+[run]
+bcc = me@example.com
+----
+
+=== Settings
+
+NOTE: Empty values are valid and mean that a setting has been un-set.
+
+==== Global and Command Line
+
+workdir:: The working directory, defaults to `~/clockrotz`.
+server:: Address of the SMTP server. Defaults to `localhost`.
+port:: Port of the SMTP server. Defaults to the SMTP submission port `587`.
+not-before:: Do not sent messages before the specified time. (`00:00` until `not-before`)
+not-after:: Do not sent messages after the specified time. (`not-after` until `23:59`)
+
+TODO: not-after / not-before warrant some better explanation
+
+Priority of these is as follows `command line > global`.
+
+==== Global, Command Line and as Configuration
+
+These parameters are valid everywhere and may also be included in the
+configuration part of a message.
+
+NOTE: `date` is not allowed anywhere except in the message configuration.
+
+from:: `from` as in <<Configuration>>
+to:: `to` as in <<Configuration>>
+cc:: `cc` as in <<Configuration>>
+bcc:: `bcc` as in <<Configuration>>
+subject:: `subject` as in <<Configuration>>
+reply-to:: `reply-to` as in <<Configuration>>
+
+Priority of these is as follows `configuration > command line > global`.
+
+== Message format
+
+Messages consist of two parts *separated by a single empty line*. The first part
+is the configuration and the second part is the actual message.
+
+.Example message
+----
+to: cryogenics-department@example.com
+from: me-bot@example.com
+cc: me@example.com
+subject: Unfreeze Clemens
+date: 2134-01-01
+
+Dear Cryogenics Department,
+
+please unfreeze Clemens, as he wanted to watch this year's close pass of
+Halley's Comet. This one is going to have an apparent magnitude of -2.0 — it's
+gonna be fun, so feel free to join him!
+----
+
+
+[[Configuration]]
+=== Configuration
+
+The following parameters are permitted, everything else is going to be ignored.
+
+==== Required parameters
+
+NOTE: Except for `date`, other required parameters may be specified outside the
+message configuration, either on the command line or in the ini-file.
+
+date:: The "not before" date. This may either be a simple date in the format
+`YYYY-mm-dd`, which will be interpreted as `YYYY-mm-dd 00:00`, or a date with a
+time in the form of `YYYY-mm-dd HH:MM`.
+
+to:: A single address to where the message will be sent. It may either be a
+simple email address such as `foo@example.net` or an address including a
+name such as `Foo bar <foo@example.net>`.
+
+subject:: A short subject.
+
+from:: Same format as `to`.
+
+==== Optional parameters
+
+cc:: Same format as `to`, but multiple comma-separated entries are allowed,
+works like `Cc` in email.
+
+bcc:: Same format as `to`, but multiple comma-separated entries are allowed,
+works like `Bcc` in email.
+
+reply-to:: Same format as `to`, works like `Reply-To` in email.
+
+=== Message Body
+
+Simple, plain text. It is assumed to be in UTF-8, though.
+
+== Writing a New Message
+
+Either edit a file, directly in `{clockrotz-base}/todo`, or use the command line tool
+to initialize an empty message and start your favourite editor. The file name
+must end in `.msg`, otherwise it will be ignored.
+
+.Using the command line tool
+----
+$ clockrotz create --to "foo@example.com"
+----
+
+== Command Line Options
+
+Use `--help` after any command to get the full help message shown.
+
+----
+include::clockrotz.go[tag=main]
+----
+
+=== `next` command
+
+----
+include::cmd/next.go[tag=next]
+----
+
+This will show which messages are going to be sent within the next 7 days. Use
+the `--days` parameter to change how many days in advance are processed. If you
+use the `--all` parameter, all pending messages will be listed.
+The format is simply `date  subject (filename)`.
+
+----
+$ clockrotz next --all
+Showing all messages.
+
+2061-07-28 00:00  Watch Halley's Comet (halley.msg)
+2134-01-01 00:00  Unfreeze Clemens (unfreeze.msg)
+----
+
+
+=== `run` command
+
+----
+include::cmd/run.go[tag=run]
+----
+
+This will send out all pending messages. There will be no output, unless there
+were errors. Any message that could not be sent will be moved to the `errors`
+folder, and a corresponding `.log`-file will be created with all available
+information; additionally, the program will start to complain at every
+invocation that there were messages with errors. Messages that were delivered
+successfully are moved to the `done` folder and a corresponding `.log`-file is
+created there, too.
+
+
+=== `create` command
+
+----
+include::cmd/create.go[tag=create]
+----
+
+The `create` command will assist you in creating a new message. It will open a
+new file for you, filled in with any parameters you provided on the command
+line. If you provide a file name through the `--draft` parameter, it will
+create a new file based on the given file name in the `drafts` folder.
+
+----
+clockrotz create --to foo@example.com --subject "Something"
+----
+
+It will use the editor configured in `$VISUAL` or `$EDITOR` or `vi`, if the
+former are empty.
+
+`date` will be set to tomorrow's date.
+
+----
+1 to: foo@example.com
+2 subject: Something
+3 date: 2016-01-01
+4
+5 Add message to the world of tomorrow here.
+~
+~
+~
+~
+ INSERT >> [No Name][+]               <<<
+-- INSERT --
+----
+
+After editing it will ask you if you want to add the message to the `todo`
+folder.
+
+----
+Save message? ([(y)es], (d)raft, (n)o):
+----
+
+Answering `n` or `no` will discard the message, answering `d` or `draft` will
+add it to the `drafts` folder. If you type `y`, `yes`, or simply hit `ENTER` it
+will be added to the `todo` folder.
+
+
+=== `check` command
+
+----
+include::cmd/check.go[tag=check]
+----
+
+The `check` command will check all messages in the `todo` and `drafts` folder
+and report any messages that can't be processed. Optionally a file name can be
+provided to check only the given file. It will exit with a code of `0` if no
+errors were found, otherwise with a code of `1`.
+
+NOTE: `--silent` will not suppress output of errors, such as problems loading a
+file.
+
+----
+$ clockrotz check
+
+in drafts:
+ foo.msg:
+    missing the 'to' parameter
+    missing the 'subject' parameter
+
+in todo:
+ bar.msg:
+    'date' parameter is invalid
+----
+
+=== `debug` command
+
+----
+include::cmd/debug.go[tag=debug]
+----
+
+The `debug` command will print out the effective configuration for a message,
+plus the email message.  This shows all settings as they are seen at that
+point. Note that this also shows settings — such as `workdir` and `config` —
+that cannot be overridden by the message. Please note that for the email
+message there are several places, such as the `Message-Id`, that vary from
+invocation to invocation as they are randomly generated.
+
+----
+$ clockrotz debug clockrotz/todo/2061.msg
+Configuration
+-------------
+config: /home/me/.config/config.ini
+date: 2061-07-28
+days: 7
+from: me@example.com
+not-after: 23:59
+not-before: 00:00
+port: 578
+server: smtp.example.com
+subject: Watch Halley's Comet
+to: me@example.com
+workdir: /home/me/clockrotz
+
+Email message
+-------------
+Content-Type: multipart/mixed;
+ boundary=8bb4fce665d20481a3b832ef74a12123edadb7b1bc4d5b505c93e9fbd9e2
+To: <me@example.com>
+Subject: Watch Halley's Comet
+Message-Id: <1464969109987565122.18908.793296386389602001@smtp.example.com>
+From: me@example.com
+Date: Fri, 03 Jun 2016 17:51:49 +0200
+Mime-Version: 1.0
+
+--8bb4fce665d20481a3b832ef74a12123edadb7b1bc4d5b505c93e9fbd9e2
+Content-Type: multipart/alternative;
+ boundary=70b52bfb5fa8b90ebe2b3b9373f62436d412ae3e59bbfa20685dbc1bd6bc
+
+--70b52bfb5fa8b90ebe2b3b9373f62436d412ae3e59bbfa20685dbc1bd6bc
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Greetings!
+
+Go outside at night, if the curfew of the – highly welcomed — alien overlords
+permits, and watch Halley's Comet.
+--70b52bfb5fa8b90ebe2b3b9373f62436d412ae3e59bbfa20685dbc1bd6bc--
+
+--8bb4fce665d20481a3b832ef74a12123edadb7b1bc4d5b505c93e9fbd9e2--
+----
