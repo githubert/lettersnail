@@ -113,7 +113,7 @@ func Create(argv []string, conf *Configuration) {
 	cmd.Run()
 
 	if cmd.ProcessState.Success() {
-		fmt.Printf("\nSave message? ([(y)es], (d)raft, (n)o): ")
+		fmt.Printf("\nSave message? ([(y)es], (r)enamed, (d)raft, (n)o): ")
 		reader := bufio.NewReader(os.Stdin)
 		response, err := reader.ReadString('\n')
 
@@ -131,6 +131,19 @@ func Create(argv []string, conf *Configuration) {
 		switch response {
 		case "y", "yes", "":
 			dst = filepath.Join(todoDir, filepath.Base(tmpFile.Name())+".msg")
+			dst, err = copyFile(tmpFile.Name(), dst, false)
+			saved = true
+		case "r", "renamed":
+			fmt.Printf("\nSpecify new name: ")
+			reader := bufio.NewReader(os.Stdin)
+			response, err := reader.ReadString('\n')
+
+			if err != nil {
+				fmt.Printf("Error when reading response: %s\n", err.Error())
+				os.Exit(1)
+			}
+
+			dst = filepath.Join(todoDir, strings.TrimSpace(response)+".msg")
 			dst, err = copyFile(tmpFile.Name(), dst, false)
 			saved = true
 		case "d", "draft":

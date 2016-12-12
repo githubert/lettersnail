@@ -376,13 +376,15 @@ After editing it will ask you if you want to add the message to the `todo`
 folder.
 
 ----
-Save message? ([(y)es], (d)raft, (n)o):
+Save message? ([(y)es], (r)enamed, (d)raft, (n)o):
 ----
 
 Answering `n` or `no` will discard the message, answering `d` or `draft` will
 add it to the `drafts` folder. If you type `y`, `yes`, or simply hit `ENTER` it
-will be added to the `todo` folder.
-
+will be added to the `todo` folder. If you want to save the message under a
+different name, but still into the `todo` folder, you may anwer with `r` or
+`renamed` — the program will then prompt you for a new name, without the `.msg`
+extension.
 
 === `check` command
 
