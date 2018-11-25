@@ -21,7 +21,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/docopt/docopt.go"
-	. "github.com/githubert/clockrotz/common"
+	. "github.com/githubert/lettersnail/common"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -34,7 +34,7 @@ var usageCreate =
 // tag::create[]
 `
 Usage:
-  clockrotz create [--draft=FILE] [options]
+  lettersnail create [--draft=FILE] [options]
 
 Options:
   --help           Show this help.
@@ -50,7 +50,7 @@ Options:
 func Create(argv []string, conf *Configuration) {
 	args, _ := docopt.Parse(usageCreate, argv, true, "", false)
 
-	tmpFile, err := ioutil.TempFile("", "clockrotz")
+	tmpFile, err := ioutil.TempFile("", "lettersnail")
 
 	if err != nil {
 		fmt.Printf("Error while creating temporary file: %s\n", err.Error())

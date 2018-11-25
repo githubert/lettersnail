@@ -20,7 +20,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/docopt/docopt.go"
-	. "github.com/githubert/clockrotz/common"
+	. "github.com/githubert/lettersnail/common"
 	"os"
 	"path/filepath"
 	"sort"
@@ -30,7 +30,7 @@ var usageCheck =
 // tag::check[]
 `
 Usage:
-  clockrotz check [--silent] [FILE]
+  lettersnail check [--silent] [FILE]
 
 Options:
   --silent  Suppress output, useful for silent checks.

@@ -1,4 +1,4 @@
-/* clockrotz.go: main program
+/* lettersnail.go: main program
  *
  * Copyright (C) 2016-2018 Clemens Fries <github-lettersnail@xenoworld.de>
  *
@@ -24,8 +24,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"github.com/githubert/clockrotz/cmd"
-	. "github.com/githubert/clockrotz/common"
+	"github.com/githubert/lettersnail/cmd"
+	. "github.com/githubert/lettersnail/common"
 )
 
 
@@ -33,11 +33,11 @@ var usageMain =
 // tag::main[]
 `
 Usage:
-  clockrotz [options] <command> [<args>...]
+  lettersnail [options] <command> [<args>...]
 
 Options:
-  --workdir=WORKDIR  Working directory, defaults to $HOME/clockrotz
-  --config=CONFIG    Use the given INI file instead of .config/clockrotz.ini
+  --workdir=WORKDIR  Working directory, defaults to $HOME/lettersnail
+  --config=CONFIG    Use the given INI file instead of .config/lettersnail.ini
   --help             Show this help.
 
 The following commands are available:
@@ -143,12 +143,12 @@ func main() {
 
 	args, _ := docopt.Parse(usageMain, nil, true, "", true)
 
-	// Determine configuration file name, defaults to `clockrotz.ini` in
+	// Determine configuration file name, defaults to `lettersnail.ini` in
 	// the user's config home (usually `.config`).
 	if args["--config"] != nil {
 		sessionConf.Set(CONF_CONFIG_FILENAME, args["--config"].(string))
 	} else {
-		sessionConf.Set(CONF_CONFIG_FILENAME, filepath.Join(configHome(), "clockrotz.ini"))
+		sessionConf.Set(CONF_CONFIG_FILENAME, filepath.Join(configHome(), "lettersnail.ini"))
 	}
 
 	// Determine the desired command (run, next, ...)
@@ -158,7 +158,7 @@ func main() {
 	// the optional section named after the desired command ('cmd').
 	sessionConf.MergeWithIni(command)
 
-	// Determine working directory, defaults to the folder `clockrotz` in
+	// Determine working directory, defaults to the folder `lettersnail` in
 	// the user's home directory. '--workdir' on the command line takes
 	// precedence over the 'workdir' in the INI.
 	if args["--workdir"] != nil {
@@ -166,7 +166,7 @@ func main() {
 	} else {
 		// If no working directory is set in the INI...
 		if sessionConf.Get(CONF_WORKDIR) == "" {
-			sessionConf.Set(CONF_WORKDIR, filepath.Join(userHome, "clockrotz"))
+			sessionConf.Set(CONF_WORKDIR, filepath.Join(userHome, "lettersnail"))
 		}
 	}
 

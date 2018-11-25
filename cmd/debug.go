@@ -20,7 +20,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/docopt/docopt.go"
-	. "github.com/githubert/clockrotz/common"
+	. "github.com/githubert/lettersnail/common"
 	"os"
 )
 
@@ -28,7 +28,7 @@ var usageDebug =
 // tag::debug[]
 `
 Usage:
-  clockrotz debug FILENAME
+  lettersnail debug FILENAME
 
 Options:
   --help    Show this help.

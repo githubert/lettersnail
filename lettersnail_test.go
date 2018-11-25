@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
-	. "github.com/githubert/clockrotz/common"
+	. "github.com/githubert/lettersnail/common"
 )
 
 func TestExpandTilde(t *testing.T) {

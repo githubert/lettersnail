@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/githubert/clockrotz",
+	"ImportPath": "github.com/githubert/lettersnail",
 	"GoVersion": "go1.5.4",
 	"Deps": [
 		{

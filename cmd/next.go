@@ -20,7 +20,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/docopt/docopt.go"
-	. "github.com/githubert/clockrotz/common"
+	. "github.com/githubert/lettersnail/common"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -31,7 +31,7 @@ var usageNext =
 // tag::next[]
 `
 Usage:
-  clockrotz next [--days=DAYS | --all]
+  lettersnail next [--days=DAYS | --all]
 
 Options:
   --help       Show this help.
@@ -72,7 +72,7 @@ func Next(argv []string, conf *Configuration) {
 		message.Conf.MergeWith(conf)
 
 		if errs := message.Verify(); errs != nil {
-			fmt.Printf("Error in message \"%s\". Please run 'clockrotz check'.\n", message.Name)
+			fmt.Printf("Error in message \"%s\". Please run 'lettersnail check'.\n", message.Name)
 			continue
 		}
 

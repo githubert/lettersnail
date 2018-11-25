@@ -1,20 +1,20 @@
-= Clockrotz
-Clemens Fries <github-clockrotz@xenoworld.de>
+= Lettersnail
+Clemens Fries <github-lettersnail@xenoworld.de>
 :source-highlighter: pygments
 :toc: left
-:clockrotz-ini: clockrotz.ini
-:clockrotz-base: clockrotz
+:lettersnail-ini: lettersnail.ini
+:lettersnail-base: lettersnail
 :version: 0.0.1
 
-Clockrotz v{version} — a simple email notification helper.
+lettersnail v{version} — a simple email notification helper.
 
 IMPORTANT: This program is in development and might have some rough edges. The
 documentation on `master` should still accurately reflect the current state of
 the program.
 
-== What is `clockrotz`?
+== What is `lettersnail`?
 
-`clockrotz` is a “note to my future self” email notification tool. You write a
+`lettersnail` is a “note to my future self” email notification tool. You write a
 simple text file, with some metadata, and it will, upon invocation, send a
 message when the time has come.
 
@@ -38,7 +38,7 @@ so I would not forget them if I move to another server. You could realize
 most of this with `atd`, but it is a bit clumsy if want to quickly write a
 message, plus I'd totally forget to copy `/var/spool/at`.
 
-`clockrotz` is not meant to be a daemon. It should be executed regularly by a
+`lettersnail` is not meant to be a daemon. It should be executed regularly by a
 cron job or other method. For the `date` parameter it also supports having a
 specific time, which acts as a “not before” constraint. If you run your cron
 job often enough (for example: every five minutes) the message will, of course,
@@ -56,15 +56,15 @@ write the following:
 ----
 cd $(mktemp -d)
 export GOPATH=$PWD
-git clone http://github.com/githubert/clockrotz src/github.com/githubert/clockrotz
-cd src/github.com/githubert/clockrotz
+git clone http://github.com/githubert/lettersnail src/github.com/githubert/lettersnail
+cd src/github.com/githubert/lettersnail
 godep get
 go build
 ----
 
 === Running
 
-Create `.config/{clockrotz-ini}`:
+Create `.config/{lettersnail-ini}`:
 [source,ini]
 ----
 [default]
@@ -76,27 +76,27 @@ from = me@example.com
 
 Create a new message:
 ----
-clockrotz create --to me@example.com
+lettersnail create --to me@example.com
 ----
 
 Add a cron job:
 ----
-0 6 * * * /path/to/clockrotz run
+0 6 * * * /path/to/lettersnail run
 ----
 
 List messages due in the next days:
 ----
-clockrotz next
+lettersnail next
 ----
 
 Run manually:
 ----
-clockrotz run
+lettersnail run
 ----
 
 == Quick Start Walkthrough
 
-Create a file `.config/{clockrotz-ini}` and provide a server, credentials and a
+Create a file `.config/{lettersnail-ini}` and provide a server, credentials and a
 from address:
 
 [source,ini]
@@ -114,7 +114,7 @@ NOTE: `port` defaults to `587`. If it doesn't work, try setting `port` to
 Now ready some message to yourself:
 
 ----
-clockrotz create --to me@example.com
+lettersnail create --to me@example.com
 ----
 
 This will open a new file using the editor set in the `VISUAL` environment
@@ -124,35 +124,35 @@ Fill in `date` in the format `YYYY-mm-dd` (for example `date: 2016-01-01`) and
 add a meaningful `subject`. Add a blank line between the configuration in the
 header and your message's body.
 
-Save and exit the editor. `clockrotz` will ask you what to do. Press `ENTER` to
-save the message to the `{clockrotz-base}/todo` folder.
+Save and exit the editor. `lettersnail` will ask you what to do. Press `ENTER` to
+save the message to the `{lettersnail-base}/todo` folder.
 
 If you set `date` to today's date you can test if everything works. First check
-if everything is okay by running `clockrotz check`, if it reports no errors,
-you can see with `clockrotz next` if the message is scheduled for being sent
+if everything is okay by running `lettersnail check`, if it reports no errors,
+you can see with `lettersnail next` if the message is scheduled for being sent
 out in the next seven days.
 
-Finally, if you type `clockrotz run`, it will deliver all messages that were
+Finally, if you type `lettersnail run`, it will deliver all messages that were
 due.
 
-As `clockrotz` is not a daemon, you should run it daily by adding it as a cron
+As `lettersnail` is not a daemon, you should run it daily by adding it as a cron
 job.
 
 Type `crontab -e` and add a entry to run the command every day at 6 in the
 morning:
 
 ----
-0 6 * * * /path/to/clockrotz run
+0 6 * * * /path/to/lettersnail run
 ----
 
 == Folder structure
 
-The default working directory is `clockrotz`, located in the user's home
+The default working directory is `lettersnail`, located in the user's home
 directory. There are several folders created beneath it, when the program
 is invoked.
 
 ----
-clockrotz/
+lettersnail/
   todo/
   done/
   errors/
@@ -160,7 +160,7 @@ clockrotz/
 ----
 
 `todo/` is the message queue. All `.msg` files in that folder are considered
-when running `clockrotz run`.
+when running `lettersnail run`.
 
 `done/` contains all messages that were successfully delivered. For every
 message there is also a corresponding `.log` file.
@@ -168,17 +168,17 @@ message there is also a corresponding `.log` file.
 `errors/` contains all messages that could not be delivered. For every message
 there is also a corresponding `.log` file.
 
-`drafts/` contains messages that can be used with `clockrotz create --draft
+`drafts/` contains messages that can be used with `lettersnail create --draft
 FILENAME`. Additionally, messages in this folder will also be checked with
-`clockrotz check`.
+`lettersnail check`.
 
-== Global Settings File `.config/{clockrotz-ini}`
+== Global Settings File `.config/{lettersnail-ini}`
 
-Global settings can be put into the optional file `.config/{clockrotz-ini}`.
+Global settings can be put into the optional file `.config/{lettersnail-ini}`.
 
 All _global_ settings can also be overridden on the command line.
 
-`.config/{clockrotz-ini}` is a simple ini-style settings file with a `default`
+`.config/{lettersnail-ini}` is a simple ini-style settings file with a `default`
 section, plus optional sections for every command, in order to overrule the
 settings in the `default` section.
 
@@ -186,7 +186,7 @@ settings in the `default` section.
 [source,ini]
 ----
 [default]
-workdir = ~/clockrotz
+workdir = ~/lettersnail
 server = smtp.example.com
 port = 587
 from = me@example.com
@@ -201,7 +201,7 @@ NOTE: Empty values are valid and mean that a setting has been un-set.
 
 ==== Global and Command Line
 
-workdir:: The working directory, defaults to `~/clockrotz`.
+workdir:: The working directory, defaults to `~/lettersnail`.
 server:: Address of the SMTP server. Defaults to `localhost`.
 port:: Port of the SMTP server. Defaults to the SMTP submission port `587`.
 not-before:: Do not sent messages before the specified time. (`00:00` until `not-before`)
@@ -286,13 +286,13 @@ Simple, plain text. It is assumed to be in UTF-8, though.
 
 == Writing a New Message
 
-Either edit a file, directly in `{clockrotz-base}/todo`, or use the command line tool
+Either edit a file, directly in `{lettersnail-base}/todo`, or use the command line tool
 to initialize an empty message and start your favourite editor. The file name
 must end in `.msg`, otherwise it will be ignored.
 
 .Using the command line tool
 ----
-$ clockrotz create --to "foo@example.com"
+$ lettersnail create --to "foo@example.com"
 ----
 
 == Command Line Options
@@ -300,7 +300,7 @@ $ clockrotz create --to "foo@example.com"
 Use `--help` after any command to get the full help message shown.
 
 ----
-include::clockrotz.go[tag=main]
+include::lettersnail.go[tag=main]
 ----
 
 === `next` command
@@ -315,7 +315,7 @@ use the `--all` parameter, all pending messages will be listed.
 The format is simply `date  subject (filename)`.
 
 ----
-$ clockrotz next --all
+$ lettersnail next --all
 Showing all messages.
 
 2061-07-28 00:00  Watch Halley's Comet (halley.msg)
@@ -350,7 +350,7 @@ line. If you provide a file name through the `--draft` parameter, it will
 create a new file based on the given file name in the `drafts` folder.
 
 ----
-clockrotz create --to foo@example.com --subject "Something"
+lettersnail create --to foo@example.com --subject "Something"
 ----
 
 It will use the editor configured in `$VISUAL` or `$EDITOR` or `vi`, if the
@@ -401,7 +401,7 @@ NOTE: `--silent` will not suppress output of errors, such as problems loading a
 file.
 
 ----
-$ clockrotz check
+$ lettersnail check
 
 in drafts:
  foo.msg:
@@ -427,7 +427,7 @@ message there are several places, such as the `Message-Id`, that vary from
 invocation to invocation as they are randomly generated.
 
 ----
-$ clockrotz debug clockrotz/todo/2061.msg
+$ lettersnail debug lettersnail/todo/2061.msg
 Configuration
 -------------
 config: /home/me/.config/config.ini
@@ -440,7 +440,7 @@ port: 578
 server: smtp.example.com
 subject: Watch Halley's Comet
 to: me@example.com
-workdir: /home/me/clockrotz
+workdir: /home/me/lettersnail
 
 Email message
 -------------

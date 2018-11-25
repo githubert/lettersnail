@@ -21,7 +21,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/docopt/docopt.go"
-	. "github.com/githubert/clockrotz/common"
+	. "github.com/githubert/lettersnail/common"
 	"github.com/jordan-wright/email"
 	"net/mail"
 	"net/textproto"
@@ -35,7 +35,7 @@ var usageRun =
 // tag::run[]
 `
 Usage:
-  clockrotz run [options]
+  lettersnail run [options]
 
 Options:
   --help             Show this help.
@@ -103,7 +103,7 @@ func Run(argv []string, conf *Configuration) {
 	if verificationError {
 		// FIXME: This suggests that other messages were not sent, but they were....
 		fmt.Println("There were errors when verifying one or more messages.")
-		fmt.Println("Please run 'clockrotz check'")
+		fmt.Println("Please run 'lettersnail check'")
 		os.Exit(1)
 	}
 }
