@@ -1,6 +1,6 @@
 /* message.go: module for managing message information
  *
- * Copyright (C) 2016 Clemens Fries <github-clockrotz@xenoworld.de>
+ * Copyright (C) 2016-2018 Clemens Fries <github-lettersnail@xenoworld.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
