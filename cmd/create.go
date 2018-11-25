@@ -113,6 +113,7 @@ func Create(argv []string, conf *Configuration) {
 	cmd.Run()
 
 	if cmd.ProcessState.Success() {
+	again:
 		fmt.Printf("\nSave message? ([(y)es], (r)enamed, (d)raft, (n)o): ")
 		reader := bufio.NewReader(os.Stdin)
 		response, err := reader.ReadString('\n')
@@ -134,9 +135,13 @@ func Create(argv []string, conf *Configuration) {
 			dst, err = copyFile(tmpFile.Name(), dst, false)
 			saved = true
 		case "r", "renamed":
-			fmt.Printf("\nSpecify new name: ")
+			fmt.Printf("\nSpecify new name (leave empty to return to previous menu): ")
 			reader := bufio.NewReader(os.Stdin)
 			response, err := reader.ReadString('\n')
+
+			if strings.TrimSpace(response) == "" {
+				goto again
+			}
 
 			if err != nil {
 				fmt.Printf("Error when reading response: %s\n", err.Error())
