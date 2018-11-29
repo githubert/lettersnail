@@ -1,0 +1,9 @@
+github.com/davecgh/go-spew v0.0.0-20151105211317-5215b55f46b2/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/docopt/docopt.go v0.0.0-20160216232012-784ddc588536 h1:/YmFhiw1vfVPxHqlKgGR3VqdRh8yPQMOhAAOZjQhoLI=
+github.com/docopt/docopt.go v0.0.0-20160216232012-784ddc588536/go.mod h1:l7JNRynTRuqe45tpIyItHNqZWTxywYjp87MWTOnU5cg=
+github.com/go-ini/ini v1.11.0 h1:EDp2zFK6TR11mvDrWDask1bXLBUgqbIqG4R6Lq3EoKI=
+github.com/go-ini/ini v1.11.0/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
+github.com/jordan-wright/email v0.0.0-20160403172529-fd703108daeb h1:1LOoETL7hp1+3D8J96gqWJVtEA5+rVN9kHRIl1G0Q/s=
+github.com/jordan-wright/email v0.0.0-20160403172529-fd703108daeb/go.mod h1:1c7szIrayyPPB/987hsnvNzLushdWf4o/79s3P08L8A=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/stretchr/testify v0.0.0-20160504130155-6cb3b85ef5a0/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
