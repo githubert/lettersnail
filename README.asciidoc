@@ -55,10 +55,7 @@ write the following:
 [source,shell]
 ----
 cd $(mktemp -d)
-export GOPATH=$PWD
-git clone http://github.com/githubert/lettersnail src/github.com/githubert/lettersnail
-cd src/github.com/githubert/lettersnail
-godep get
+git clone http://github.com/githubert/lettersnail
 go build
 ----
 
